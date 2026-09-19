@@ -1,5 +1,4 @@
 import numpy as np
-from collections import Counter
 
 class KNN_classifier:
     """Класс, реализующий метрический алгоритм 
@@ -22,7 +21,8 @@ class KNN_classifier:
         predictions = []
         for x in objects:
             #вектор расстояний от таргета до всех объектов их выборки
-            distance = np.linalg.norm(self.X - objects, axis=1)
+            
+            distance = np.linalg.norm(self.X - x, axis=1)
 
             indexis = np.argpartition(distance, self.K_neighbors)[:self.K_neighbors]
             neighbors = self.Y[indexis]
@@ -32,7 +32,7 @@ class KNN_classifier:
             for neighbor in neighbors:
                 counts[neighbor] = counts.get(neighbor, 0) + 1    
 
-            predictions.append(max(counts, ket = counts.get))
+            predictions.append(max(counts, key = counts.get))
 
         predict = np.array(predictions)
         return predict
@@ -42,21 +42,18 @@ class KNN_classifier:
                          target: np.ndarray) -> np.ndarray:
         """Возвращает confusion matrix"""
         self._Confusion_matrix = np.zeros((2,2))
-        #TP
-        self._Confusion_matrix[0,0] = np.sum(predictions == 1 & target == 1)
-        #FP
-        self._Confusion_matrix[0,1] = np.sum(predictions == 1 & target == 0)
-        #FN
-        self._Confusion_matrix[1,0] = np.sum(predictions == 0 & target == 1)
-        #TN
-        self._Confusion_matrix[1,1] = np.sum(predictions == 0 & target == 0)
+        
+        self._Confusion_matrix[0,0] = np.sum((predictions == 1) & (target == 1)) #TP
+        self._Confusion_matrix[0,1] = np.sum((predictions == 1) & (target == 0)) #FP
+        self._Confusion_matrix[1,0] = np.sum((predictions == 0) & (target == 1)) #FN
+        self._Confusion_matrix[1,1] = np.sum((predictions == 0) & (target == 0)) #TN
 
         return self._Confusion_matrix
 
     def accuracy(self) -> float:
         """Метрика accuracy"""
         return (self._Confusion_matrix[1,1] + self._Confusion_matrix[0,0])/(self._Confusion_matrix[1,1] + self._Confusion_matrix[0,0] +
-                                                                            self._Confusion_matrix[0,1] + self._Confusion_matrix[0,1])
+                                                                            self._Confusion_matrix[0,1] + self._Confusion_matrix[1,0])
     def precision(self) -> float:
         """Метрика precision"""
         if (self._Confusion_matrix[0,0] + self._Confusion_matrix[0,1]) == 0:

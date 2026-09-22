@@ -2,6 +2,9 @@ import numpy as np
 import pandas as pd
 from models import KNN_classifier
 
+
+
+""" =============== Тест KNN ==============="""
 path = "data/proced_titanic.csv"
 
 data = pd.read_csv(path)
@@ -51,3 +54,4 @@ print(f"\nConfusion Matrix:\n {confusion_matrix}")
 
 
 
+""" =============== Тест K-means ==============="""
